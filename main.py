@@ -1,6 +1,10 @@
-def main():
-    print("Hello from yt-screengrab-server!")
-
+#!/usr/bin/env python3
+import uvicorn
 
 if __name__ == "__main__":
-    main()
+    uvicorn.run(
+        "server.app:app",
+        host="0.0.0.0",
+        port=7777,
+        reload=False
+    )

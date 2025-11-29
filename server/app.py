@@ -33,18 +33,20 @@ async def screengrab(request: ScreengrabRequest):
 
         # Create a temporary directory for the download
         with tempfile.TemporaryDirectory() as temp_dir:
-            output_path = os.path.join(temp_dir, "screenshot.jpg")
+            output_name = "frame"
+            output_path = os.path.join(temp_dir, output_name)
 
-            # Use yt-dlp to get a screenshot
-            # --write-thumbnail writes the thumbnail
-            # --skip-download skips downloading the video
-            # --convert-thumbnails jpg converts to JPEG format
+            # Use yt-dlp to get a screenshot using ffmpeg downloader
+            # -o frame sets the output filename base
+            # --downloader ffmpeg uses ffmpeg to download
+            # --downloader-args "ffmpeg_i:-t 1" downloads only the first second
+            # --exec runs ffmpeg to extract the frame from the downloaded chunk
             cmd = [
                 "yt-dlp",
-                "--write-thumbnail",
-                "--skip-download",
-                "--convert-thumbnails", "jpg",
                 "-o", output_path,
+                "--downloader", "ffmpeg",
+                "--downloader-args", "ffmpeg_i:-t 1",
+                "--exec", "ffmpeg -y -sseof -0.1 -i {} -update 1 -q:v 2 {}.jpg",
                 url
             ]
 
@@ -65,7 +67,7 @@ async def screengrab(request: ScreengrabRequest):
             # yt-dlp creates files like screenshot.jpg or screenshot.jpg.jpg
             thumbnail_file = None
             for file in os.listdir(temp_dir):
-                if file.endswith(".jpg"):
+                if file == output_name + ".jpg":
                     thumbnail_file = os.path.join(temp_dir, file)
                     break
 
