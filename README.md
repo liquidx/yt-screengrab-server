@@ -22,7 +22,25 @@ To run the Docker container:
 docker run -p 7777:7777 yt-screengrab-server
 ```
 
-To deploy to another server:
+## Published image (GitHub Container Registry)
+
+Every push to `main` builds and publishes `ghcr.io/liquidx/yt-screengrab-server:latest`
+via `.github/workflows/docker-image.yml`. Tagging a release (`v1.2.3`) also publishes
+`:1.2.3`. The package is private until you make it public in the repo's Packages
+settings; for a private package, log in first:
+
+```bash
+echo $GITHUB_TOKEN | docker login ghcr.io -u liquidx --password-stdin
+```
+
+Then pull and run with compose:
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+## Deploying without the registry
 
 1.  **Option A: Build on the server**
     Copy the source code to the server and run the build command above.
